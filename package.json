@@ -16,12 +16,12 @@
 		"url": "git+https://github.com/morning-bird/companion-module-apc-ups.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.0.1",
+        "@companion-module/base": "^1.11.1",
 		"snmp-native": "^1.2.0",
 		"ssh2": "^1.16.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^0.5.1",
+        "@companion-module/tools": "^2.1.0",
 		"@types/node": "^18.11.9",
 		"@types/snmp-native": "^1.2.5",
 		"@types/ssh2": "^1.15.1",
