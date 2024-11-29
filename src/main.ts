@@ -70,89 +70,91 @@ export default class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log("error", "password is required!");
 			return;
 		}
-		const clientConfig = {
-			host: this.config.host,
-			port: this.config.port,
-			username: this.config.username,
-			password: this.config.password,
-			keepaliveInterval: 5000,
-			keepaliveCountMax: 3,
-			readyTimeout: 20000,
-			debug: (debugStr: string) => {
-				this.log("debug", debugStr);
-			},
-		};
-		this.log("debug", "try to connect to " + clientConfig.host);
-		this.updateStatus(InstanceStatus.Connecting);
-		this.sshClient.on("error", (err) => {
-			this.log("error", "Server connection error: " + err);
-			this.updateStatus(InstanceStatus.ConnectionFailure);
-			this.queueReconnect();
-		});
+		this.updateStatus(InstanceStatus.Ok);
+		return
+		// const clientConfig = {
+		// 	host: this.config.host,
+		// 	port: this.config.port,
+		// 	username: this.config.username,
+		// 	password: this.config.password,
+		// 	keepaliveInterval: 5000,
+		// 	keepaliveCountMax: 3,
+		// 	readyTimeout: 20000,
+		// 	debug: (debugStr: string) => {
+		// 		this.log("debug", debugStr);
+		// 	},
+		// };
+		// this.log("debug", "try to connect to " + clientConfig.host);
+		// this.updateStatus(InstanceStatus.Connecting);
+		// this.sshClient.on("error", (err) => {
+		// 	this.log("error", "Server connection error: " + err);
+		// 	this.updateStatus(InstanceStatus.ConnectionFailure);
+		// 	this.queueReconnect();
+		// });
 
-		this.sshClient.on("end", () => {
-			this.log("error", "Server ended connection");
-			this.updateStatus(InstanceStatus.Disconnected);
-			this.queueReconnect();
-		});
+		// this.sshClient.on("end", () => {
+		// 	this.log("error", "Server ended connection");
+		// 	this.updateStatus(InstanceStatus.Disconnected);
+		// 	this.queueReconnect();
+		// });
 
-		this.sshClient.on("timeout", () => {
-			this.log("error", "Server connection timed out");
-			this.updateStatus(InstanceStatus.ConnectionFailure);
-			this.queueReconnect();
-		});
+		// this.sshClient.on("timeout", () => {
+		// 	this.log("error", "Server connection timed out");
+		// 	this.updateStatus(InstanceStatus.ConnectionFailure);
+		// 	this.queueReconnect();
+		// });
 
-		this.sshClient.on("connect", () => {
-			// once we are connected, we will change the connection status to Connecting, as we still need to auth.
-			this.log("debug", "Server connection successful!");
-			this.updateStatus(InstanceStatus.Connecting);
-		});
+		// this.sshClient.on("connect", () => {
+		// 	// once we are connected, we will change the connection status to Connecting, as we still need to auth.
+		// 	this.log("debug", "Server connection successful!");
+		// 	this.updateStatus(InstanceStatus.Connecting);
+		// });
 
-		this.sshClient.on("ready", () => {
-			this.log("debug", "Server connection ready!");
-			this.sshClient?.shell((err, stream) => {
-				if (err) throw err;
-				stream
-					.on("close", (data: any) => {
-						this.log("debug", "Shell stream closed");
-						this.queueReconnect();
-					})
-					.on("data", (data: any) => {
-						const dataStr = data.toString();
-						// Cek untuk Outlet1, Outlet2, atau Outlet3
-						const outletMatch = dataStr.match(
-							/Outlet([\d]) State:\s*(\w+)/i
-						);
-						if (outletMatch) {
-							const outletNumber = outletMatch[1];
-							const state = outletMatch[2];
-							this.log(
-								"info",
-								`Outlet${outletNumber} State: ${state}`
-							);
-						}
-					})
-					.stderr.on("data", (data) => {
-						this.log("error", "STDERR: " + data);
-					});
-				setTimeout(() => {
-					stream.end("ups -os 1\n");
-				}, 100);
-			});
-			this.updateStatus(InstanceStatus.Ok);
-		});
-		try {
-			this.sshClient.connect({
-				host: this.config.host,
-				port: this.config.port,
-				username: this.config.username,
-				password: this.config.password,
-			});
-		} catch (exc: any) {
-			this.log("error", "initiating connection failed, error: " + exc);
-			this.updateStatus(InstanceStatus.ConnectionFailure);
-			return;
-		}
+		// this.sshClient.on("ready", () => {
+		// 	this.log("debug", "Server connection ready!");
+		// 	// this.sshClient?.shell((err, stream) => {
+		// 	// 	if (err) throw err;
+		// 	// 	stream
+		// 	// 		.on("close", (data: any) => {
+		// 	// 			this.log("debug", "Shell stream closed");
+		// 	// 			this.queueReconnect();
+		// 	// 		})
+		// 	// 		.on("data", (data: any) => {
+		// 	// 			const dataStr = data.toString();
+		// 	// 			// Cek untuk Outlet1, Outlet2, atau Outlet3
+		// 	// 			const outletMatch = dataStr.match(
+		// 	// 				/Outlet([\d]) State:\s*(\w+)/i
+		// 	// 			);
+		// 	// 			if (outletMatch) {
+		// 	// 				const outletNumber = outletMatch[1];
+		// 	// 				const state = outletMatch[2];
+		// 	// 				this.log(
+		// 	// 					"info",
+		// 	// 					`Outlet${outletNumber} State: ${state}`
+		// 	// 				);
+		// 	// 			}
+		// 	// 		})
+		// 	// 		.stderr.on("data", (data) => {
+		// 	// 			this.log("error", "STDERR: " + data);
+		// 	// 		});
+		// 	// 	setTimeout(() => {
+		// 	// 		stream.end("ups -os 1\n");
+		// 	// 	}, 100);
+		// 	// });
+		// 	this.updateStatus(InstanceStatus.Ok);
+		// });
+		// try {
+		// 	this.sshClient.connect({
+		// 		host: this.config.host,
+		// 		port: this.config.port,
+		// 		username: this.config.username,
+		// 		password: this.config.password,
+		// 	});
+		// } catch (exc: any) {
+		// 	this.log("error", "initiating connection failed, error: " + exc);
+		// 	this.updateStatus(InstanceStatus.ConnectionFailure);
+		// 	return;
+		// }
 	}
 
 	public async init(config: DeviceConfig): Promise<void> {
@@ -206,6 +208,11 @@ export default class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.puller = setInterval(() => {
 			this.pullData()
 		}, this.config.pullingTime)
+	}
+
+	pullAPCStatus() {
+		if (!this.sshClient) return;
+		// this.sshClient.
 	}
 
 	pullData() {
