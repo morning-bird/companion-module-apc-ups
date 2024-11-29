@@ -11,8 +11,8 @@ function GetPresetList() {
         style: {
             text: `UPS BAT\\n$(APC_UPS_Monitor:battery_capacity) %`,
             size: 'auto',
-            color: (0, base_1.combineRgb)(0, 153, 0),
-            bgcolor: (0, base_1.combineRgb)(0, 0, 0),
+            color: (0, base_1.combineRgb)(255, 255, 255),
+            bgcolor: (0, base_1.combineRgb)(0, 153, 0),
         },
         steps: [
             {

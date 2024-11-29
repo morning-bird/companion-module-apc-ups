@@ -13,16 +13,18 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-apc-ups.git"
+		"url": "git+https://github.com/morning-bird/companion-module-apc-ups.git"
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.0.1",
-		"snmp-native": "^1.2.0"
-
+		"snmp-native": "^1.2.0",
+		"ssh2": "^1.16.0"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^0.5.1",
 		"@types/node": "^18.11.9",
+		"@types/snmp-native": "^1.2.5",
+		"@types/ssh2": "^1.15.1",
 		"@types/ws": "^8.5.3",
 		"husky": "^8.0.1",
 		"lint-staged": "^13.0.3",
@@ -39,6 +41,6 @@
 		]
 	},
 	"engines": {
-		"node": "^18.12"
+		"node": ">=18.0.0"
 	}
 }

@@ -1,16 +1,22 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("@companion-module/base");
-const { runEntrypoint, InstanceStatus } = require('@companion-module/base');
-const { DeviceConfig, GetConfigFields } = require('./config');
-const { checkVariables, initVariables } = require('./variables');
-const { GetPresetList } = require('./presets');
-const snmp = require('snmp-native');
+const base_2 = require("@companion-module/base");
+const config_1 = require("./config");
+const variables_1 = require("./variables");
+const presets_1 = require("./presets");
+const snmp_native_1 = __importDefault(require("snmp-native"));
 class ModuleInstance extends base_1.InstanceBase {
     puller;
     session;
     config = {
         host: '',
+        port: 22,
+        username: 'apc',
+        password: '',
         pullingTime: 60000,
     };
     APC_Data = {
@@ -26,8 +32,8 @@ class ModuleInstance extends base_1.InstanceBase {
         await this.configUpdated(this.config);
         if (this.puller)
             clearInterval(this.puller);
-        initVariables(this);
-        this.setPresetDefinitions(GetPresetList());
+        (0, variables_1.initVariables)(this);
+        this.setPresetDefinitions((0, presets_1.GetPresetList)());
         this.startConnection();
     }
     // When module gets deleted
@@ -52,16 +58,16 @@ class ModuleInstance extends base_1.InstanceBase {
      * Creates the configuration fields for web config.
      */
     getConfigFields() {
-        return GetConfigFields();
+        return (0, config_1.GetConfigFields)();
     }
     startConnection() {
         // Only create a new session when needed
         if (!this.session) {
             // Create new session
-            this.session = new snmp.Session();
+            this.session = new snmp_native_1.default.Session();
             this.log('debug', 'session created: ' + JSON.stringify(this.session));
         }
-        this.updateStatus(InstanceStatus.UnknownWarning);
+        this.updateStatus(base_2.InstanceStatus.UnknownWarning);
         this.puller = setInterval(() => {
             this.pullData();
         }, this.config.pullingTime);
@@ -84,7 +90,7 @@ class ModuleInstance extends base_1.InstanceBase {
                 this.log('error', error);
             }
             else {
-                this.updateStatus(InstanceStatus.Ok);
+                this.updateStatus(base_2.InstanceStatus.Ok);
                 varbinds.forEach((vb) => {
                     this.log('debug', vb.oid + ' = ' + vb.value);
                     if (vb.oid.toString() === '1,3,6,1,4,1,318,1,1,1,1,1,1,0') {
@@ -103,10 +109,10 @@ class ModuleInstance extends base_1.InstanceBase {
                     }
                 });
             }
-            checkVariables(this);
+            (0, variables_1.checkVariables)(this);
         });
         // this.session.close()
     }
 }
-runEntrypoint(ModuleInstance, []);
+(0, base_2.runEntrypoint)(ModuleInstance, []);
 //# sourceMappingURL=main.js.map

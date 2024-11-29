@@ -13,6 +13,28 @@ function GetConfigFields() {
         },
         {
             type: 'number',
+            id: 'port',
+            label: 'Target Port',
+            width: 4,
+            default: 22,
+            min: 1,
+            max: 65535,
+        },
+        {
+            type: 'textinput',
+            id: 'username',
+            label: 'Username',
+            default: 'apc',
+            width: 8,
+        },
+        {
+            type: 'textinput',
+            id: 'password',
+            label: 'Password',
+            width: 8,
+        },
+        {
+            type: 'number',
             id: 'pullingTime',
             label: 'Set interval to pull data in msec',
             width: 8,
